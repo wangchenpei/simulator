@@ -1,7 +1,9 @@
+# Streamlit Cloud: install deps only (no editable ".") — bxsimulator via sys.path in streamlit_app.py
+setuptools>=61
+wheel
 streamlit>=1.30
 plotly>=5
 pandas>=2.0
 pyyaml>=6
 openpyxl>=3.1
 numpy>=1.24
-.

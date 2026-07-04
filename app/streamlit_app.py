@@ -7,10 +7,12 @@ import importlib
 import pandas as pd
 import streamlit as st
 
-# Ensure project root is importable when launched via `streamlit run app/streamlit_app.py`
+# Ensure project root + src package are importable (Streamlit Cloud / local).
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+SRC = ROOT / "src"
+for p in (str(ROOT), str(SRC)):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from app.components.brand_header import render_brand_header  # noqa: E402
 from app.components.charts import (
@@ -142,5 +144,4 @@ def main() -> None:
     _render_results(result["cfg"], result["nav"], result["final"])
 
 
-if __name__ == "__main__":
-    main()
+main()
