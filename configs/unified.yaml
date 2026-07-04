@@ -1,0 +1,68 @@
+product_id: unified
+
+label: "分红产品投资仿真"
+
+accounting_currency: CNY
+
+
+
+equity_weight: 0.60
+
+bond_weight: 0.40
+
+equity_min: 0.0
+
+equity_max: 1.0
+
+bond_min: 0.0
+
+bond_max: 1.0
+
+
+
+smoothing_threshold: 0.065
+
+max_fill_fraction_of_shortfall: 1.0
+
+
+
+rebalance_frequency: annual
+
+
+
+initial_main_value: 1000000.0
+
+initial_reserve: 0.0
+
+
+
+returns:
+
+  source: regional
+
+  csv_path: ../data/offline/regions
+
+
+
+equity_regions:
+
+  US: 0.25
+
+  UK: 0.25
+
+  CN: 0.25
+
+  JP: 0.25
+
+
+
+bond_regions:
+
+  US: 0.40
+
+  UK: 0.20
+
+  CN: 0.20
+
+  JP: 0.20
+

@@ -1,0 +1,26 @@
+product_id: ci_annuity
+label: "重疾+年金（欧美离线长历史）"
+accounting_currency: CNY
+
+equity_weight: 0.25
+bond_weight: 0.75
+equity_min: 0.15
+equity_max: 0.35
+bond_min: 0.65
+bond_max: 0.85
+
+smoothing_threshold: 0.045
+max_fill_fraction_of_shortfall: 1.0
+
+rebalance_frequency: annual
+
+initial_main_value: 1000000.0
+initial_reserve: 0.0
+
+returns:
+  source: csv
+  csv_path: ../data/offline/us_eu_long_annual.csv
+
+equity_regions:
+  US: 0.50
+  EU: 0.50

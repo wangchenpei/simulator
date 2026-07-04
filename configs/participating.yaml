@@ -1,0 +1,37 @@
+product_id: participating
+label: "分红储蓄（Participating / savings）"
+accounting_currency: CNY
+
+# 股权 45%-75%，债 25%-55%；默认 60/40
+equity_weight: 0.60
+bond_weight: 0.40
+equity_min: 0.45
+equity_max: 0.75
+bond_min: 0.25
+bond_max: 0.55
+
+smoothing_threshold: 0.065
+max_fill_fraction_of_shortfall: 1.0
+
+rebalance_frequency: annual
+
+initial_main_value: 1000000.0
+initial_reserve: 0.0
+
+returns:
+  source: csv
+  csv_path: ../data/sample_returns.csv
+
+# 区域权重（用于 live 拉取时加权；总和应为 1）
+equity_regions:
+  US: 0.40
+  HK: 0.30
+  CN: 0.30
+
+live_fetch:
+  us_symbol: "SPY"
+  hk_symbol: "^HSI"      # 恒生指数；比 2800.HK ETF 历史更干净
+  cn_symbol: "000300"
+  bond_symbol: "IEF"     # 勿用 BND（AkShare 往往仅 2018+）；IEF/AGG 更长
+  fred_fx_usdcny: "DEXCHUS"
+  fred_fx_usdhkd: "DEXHKUS"

@@ -1,0 +1,32 @@
+[project]
+name = "bxsimulator"
+version = "0.1.0"
+description = "BX dual-product investment smoothing backtester (Python + Excel export)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.0",
+    "pyyaml>=6",
+    "openpyxl>=3.1",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+live = ["yfinance>=0.2", "akshare>=1.14", "pyarrow>=14"]
+dev = ["pytest>=8"]
+ui = ["streamlit>=1.30", "plotly>=5"]
+
+[project.scripts]
+bxsim = "bxsimulator.cli:main"
+bxsim-web = "bxsimulator.web:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

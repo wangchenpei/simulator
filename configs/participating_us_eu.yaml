@@ -1,0 +1,28 @@
+product_id: participating
+label: "分红储蓄（欧美离线长历史）"
+accounting_currency: CNY
+
+equity_weight: 0.60
+bond_weight: 0.40
+equity_min: 0.45
+equity_max: 0.75
+bond_min: 0.25
+bond_max: 0.55
+
+smoothing_threshold: 0.065
+max_fill_fraction_of_shortfall: 1.0
+
+rebalance_frequency: annual
+
+initial_main_value: 1000000.0
+initial_reserve: 0.0
+
+# 纯离线 CSV：无需网络、无需 AkShare/Yahoo/FRED
+returns:
+  source: csv
+  csv_path: ../data/offline/us_eu_long_annual.csv
+
+# 权重仅用于 Excel Meta 说明；实际 r_equity 已在离线表中合成（默认 US/EU 各 50%）
+equity_regions:
+  US: 0.50
+  EU: 0.50
