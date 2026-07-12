@@ -36,6 +36,12 @@ from bxsimulator.config import RunConfig
 from bxsimulator.display_format import fmt_amount, format_table_for_display
 from bxsimulator.engine.backtest import run_backtest
 from bxsimulator.engine.state import PortfolioState
+from bxsimulator.export.excel import export_nav_table_csv_bytes, export_nav_table_excel_bytes
+
+
+def _nav_export_stem(nav: pd.DataFrame) -> str:
+    dates = pd.to_datetime(nav["date"])
+    return f"bxsim_detail_{dates.min():%Y%m%d}_{dates.max():%Y%m%d}"
 
 
 def _run_backtest_from_ui(ui: dict) -> tuple[RunConfig, pd.DataFrame, PortfolioState]:
@@ -98,6 +104,24 @@ def _render_results(cfg: RunConfig, nav: pd.DataFrame, final: PortfolioState) ->
             use_container_width=True,
         )
     with tab4:
+        export_stem = _nav_export_stem(nav)
+        dl_xlsx, dl_csv, _ = st.columns([1, 1, 4])
+        with dl_xlsx:
+            st.download_button(
+                "导出 Excel",
+                data=export_nav_table_excel_bytes(nav),
+                file_name=f"{export_stem}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
+        with dl_csv:
+            st.download_button(
+                "导出 CSV",
+                data=export_nav_table_csv_bytes(nav),
+                file_name=f"{export_stem}.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
         st.dataframe(format_table_for_display(nav), use_container_width=True, hide_index=True)
 
 

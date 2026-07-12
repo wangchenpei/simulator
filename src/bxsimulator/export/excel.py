@@ -73,6 +73,27 @@ def _write_excel_sheets(
         annual_out.to_excel(writer, sheet_name="AnnualSummary", index=False)
 
 
+def export_nav_table_excel_bytes(nav_series: pd.DataFrame) -> bytes:
+    import io
+
+    buf = io.BytesIO()
+    nav_out = round_dataframe(nav_series)
+    if "date" in nav_out.columns:
+        nav_out = nav_out.copy()
+        nav_out["date"] = pd.to_datetime(nav_out["date"]).dt.strftime("%Y-%m-%d")
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        nav_out.to_excel(writer, sheet_name="明细表", index=False)
+    return buf.getvalue()
+
+
+def export_nav_table_csv_bytes(nav_series: pd.DataFrame) -> bytes:
+    nav_out = round_dataframe(nav_series)
+    if "date" in nav_out.columns:
+        nav_out = nav_out.copy()
+        nav_out["date"] = pd.to_datetime(nav_out["date"]).dt.strftime("%Y-%m-%d")
+    return nav_out.to_csv(index=False).encode("utf-8-sig")
+
+
 def _config_to_meta_rows(cfg: RunConfig) -> list[tuple[str, Any]]:
     rows: list[tuple[str, Any]] = [
         ("product_id", cfg.product_id),
