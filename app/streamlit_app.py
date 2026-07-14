@@ -33,7 +33,7 @@ from app.components.sidebar import (
     render_sidebar,
 )  # noqa: E402
 from bxsimulator.config import RunConfig
-from bxsimulator.display_format import fmt_amount, format_table_for_display
+from bxsimulator.display_format import fmt_amount, format_nav_table_for_display
 from bxsimulator.engine.backtest import run_backtest
 from bxsimulator.engine.state import PortfolioState
 from bxsimulator.export.excel import export_nav_table_csv_bytes, export_nav_table_excel_bytes
@@ -122,7 +122,7 @@ def _render_results(cfg: RunConfig, nav: pd.DataFrame, final: PortfolioState) ->
                 mime="text/csv",
                 use_container_width=True,
             )
-        st.dataframe(format_table_for_display(nav), use_container_width=True, hide_index=True)
+        st.dataframe(format_nav_table_for_display(nav), use_container_width=True, hide_index=True)
 
 
 def main() -> None:

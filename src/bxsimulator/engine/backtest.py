@@ -42,6 +42,8 @@ def run_backtest(
         rows.append(
             {
                 "date": pd.Timestamp(dt),
+                "r_equity": float(row["r_equity"]),
+                "r_bond": float(row["r_bond"]),
                 "main_equity": res.state.main_equity,
                 "main_bond": res.state.main_bond,
                 "main_total": res.state.main_total(),

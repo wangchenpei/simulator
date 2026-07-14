@@ -8,7 +8,7 @@ from typing import Any
 import pandas as pd
 
 from bxsimulator.config import RunConfig
-from bxsimulator.display_format import round_dataframe, round_value
+from bxsimulator.display_format import build_nav_export_table, round_dataframe, round_value
 
 
 def export_excel(
@@ -77,21 +77,14 @@ def export_nav_table_excel_bytes(nav_series: pd.DataFrame) -> bytes:
     import io
 
     buf = io.BytesIO()
-    nav_out = round_dataframe(nav_series)
-    if "date" in nav_out.columns:
-        nav_out = nav_out.copy()
-        nav_out["date"] = pd.to_datetime(nav_out["date"]).dt.strftime("%Y-%m-%d")
+    export_df = build_nav_export_table(nav_series)
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-        nav_out.to_excel(writer, sheet_name="明细表", index=False)
+        export_df.to_excel(writer, sheet_name="明细表", index=False)
     return buf.getvalue()
 
 
 def export_nav_table_csv_bytes(nav_series: pd.DataFrame) -> bytes:
-    nav_out = round_dataframe(nav_series)
-    if "date" in nav_out.columns:
-        nav_out = nav_out.copy()
-        nav_out["date"] = pd.to_datetime(nav_out["date"]).dt.strftime("%Y-%m-%d")
-    return nav_out.to_csv(index=False).encode("utf-8-sig")
+    return build_nav_export_table(nav_series).to_csv(index=False).encode("utf-8-sig")
 
 
 def _config_to_meta_rows(cfg: RunConfig) -> list[tuple[str, Any]]:
