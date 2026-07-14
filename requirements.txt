@@ -1,4 +1,4 @@
-# Streamlit Cloud: install deps only (no editable ".") — bxsimulator via sys.path in streamlit_app.py
+# Streamlit Cloud: install this package so bxsimulator matches the deployed commit.
 setuptools>=61
 wheel
 streamlit>=1.30
@@ -7,3 +7,4 @@ pandas>=2.0
 pyyaml>=6
 openpyxl>=3.1
 numpy>=1.24
+.

@@ -10,9 +10,26 @@ import streamlit as st
 # Ensure project root + src package are importable (Streamlit Cloud / local).
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-for p in (str(ROOT), str(SRC)):
+for p in (str(SRC), str(ROOT)):
     if p not in sys.path:
         sys.path.insert(0, p)
+
+
+def _ensure_bxsimulator_from_src() -> None:
+    """Drop cached bxsimulator modules not loaded from this repo's src/."""
+    if not (SRC / "bxsimulator").is_dir():
+        return
+    src_marker = str(SRC).replace("\\", "/")
+    for name in list(sys.modules):
+        if name != "bxsimulator" and not name.startswith("bxsimulator."):
+            continue
+        mod = sys.modules.get(name)
+        mod_file = getattr(mod, "__file__", None) or ""
+        if mod_file and src_marker not in mod_file.replace("\\", "/"):
+            del sys.modules[name]
+
+
+_ensure_bxsimulator_from_src()
 
 from app.components.brand_header import render_brand_header  # noqa: E402
 from app.components.charts import (
