@@ -46,23 +46,11 @@ returns:
 
 equity_regions:
 
-  US: 0.25
-
-  UK: 0.25
-
-  CN: 0.25
-
-  JP: 0.25
+  US: 1.0
 
 
 
 bond_regions:
 
-  US: 0.40
-
-  UK: 0.20
-
-  CN: 0.20
-
-  JP: 0.20
+  US: 1.0
 

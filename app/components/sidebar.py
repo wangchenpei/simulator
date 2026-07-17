@@ -75,12 +75,19 @@ def _pct_weights_from_raw(raw: dict[str, float]) -> dict[str, float]:
     return {k: float(v) / 100.0 for k, v in raw.items()}
 
 
-def _validate_pct_weights(raw: dict[str, float]) -> tuple[bool, float, str | None]:
-    total = sum(float(v) for v in raw.values())
-    if sum(1 for v in raw.values() if float(v) > 0) == 0:
-        return False, total, "至少一个区域权重要大于 0"
+def _validate_pct_weights(
+    raw: dict[str, float],
+    *,
+    selected: list[str] | None = None,
+) -> tuple[bool, float, str | None]:
+    keys = selected if selected is not None else list(raw.keys())
+    if not keys:
+        return False, 0.0, "请至少勾选一个区域"
+    total = sum(float(raw.get(k, 0.0)) for k in keys)
+    if sum(1 for k in keys if float(raw.get(k, 0.0)) > 0) == 0:
+        return False, total, "已勾选区域中至少一个权重要大于 0"
     if abs(total - 100.0) > _WEIGHT_TOTAL_TOLERANCE:
-        return False, total, f"区域权重合计须为 100.00%，当前为 {fmt_number(total)}%"
+        return False, total, f"已勾选区域权重合计须为 100.00%，当前为 {fmt_number(total)}%"
     return True, total, None
 
 
@@ -90,26 +97,44 @@ def _region_weight_inputs(
     *,
     key_prefix: str,
 ) -> tuple[dict[str, float], bool]:
-    cols = st.columns(2, gap="small")
-    raw: dict[str, float] = {}
+    st.caption("勾选参与区域后填写权重；已勾选区域权重合计须为 100.00%")
     items = list(catalog.items())
+    cb_cols = st.columns(3, gap="small")
     for i, (code, meta) in enumerate(items):
-        col = cols[i % 2]
+        on_key = f"{key_prefix}_{code}_on"
         pct_default = float(defaults.get(code, 0.0)) * 100.0
-        wkey = f"{key_prefix}_{code}"
-        with col:
+        if on_key not in st.session_state:
+            st.session_state[on_key] = pct_default > _WEIGHT_TOTAL_TOLERANCE
+        with cb_cols[i % 3]:
+            st.checkbox(meta["label"], key=on_key)
+
+    selected = [
+        code
+        for code, _ in items
+        if st.session_state.get(f"{key_prefix}_{code}_on", False)
+    ]
+
+    raw: dict[str, float] = {code: 0.0 for code, _ in items}
+    if selected:
+        wcols = st.columns(2, gap="small")
+        for i, code in enumerate(selected):
+            meta = catalog[code]
+            wkey = f"{key_prefix}_{code}"
+            pct_default = float(defaults.get(code, 0.0)) * 100.0
             if wkey not in st.session_state:
-                st.session_state[wkey] = pct_default
-            raw[code] = float(
-                st.number_input(
-                    meta["label"],
-                    min_value=0.0,
-                    max_value=100.0,
-                    step=1.0,
-                    key=wkey,
+                st.session_state[wkey] = pct_default if pct_default > _WEIGHT_TOTAL_TOLERANCE else 0.0
+            with wcols[i % 2]:
+                raw[code] = float(
+                    st.number_input(
+                        f"{meta['label']} (%)",
+                        min_value=0.0,
+                        max_value=100.0,
+                        step=1.0,
+                        key=wkey,
+                    )
                 )
-            )
-    ok, total, message = _validate_pct_weights(raw)
+
+    ok, total, message = _validate_pct_weights(raw, selected=selected)
     if ok:
         st.caption("合计 100.00%")
     else:

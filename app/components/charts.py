@@ -13,6 +13,8 @@ _REGION_COLORS: dict[str, str] = {
     "UK": "#c2783a",
     "CN": "#c0392b",
     "JP": "#3d8b7a",
+    "CA": "#8e44ad",
+    "DE": "#566573",
 }
 
 _LEGEND_LAYOUT = dict(
@@ -100,24 +102,28 @@ def load_bond_return_overlays(nav: pd.DataFrame) -> dict[str, tuple[str, pd.Seri
 
 def render_regional_overlay_toggles() -> tuple[dict[str, bool], dict[str, bool]]:
     st.caption("勾选后在图表上叠加各区域股票 / 债券走势")
-    eq_cols = st.columns(len(EQUITY_REGIONS))
     show_equity: dict[str, bool] = {}
-    for col, (code, meta) in zip(eq_cols, EQUITY_REGIONS.items()):
-        with col:
-            show_equity[code] = st.checkbox(
-                meta["label"],
-                value=False,
-                key=f"bx_overlay_eq_{code}",
-            )
-    bd_cols = st.columns(len(BOND_REGIONS))
+    eq_items = list(EQUITY_REGIONS.items())
+    for row_start in range(0, len(eq_items), 3):
+        cols = st.columns(3)
+        for col, (code, meta) in zip(cols, eq_items[row_start : row_start + 3]):
+            with col:
+                show_equity[code] = st.checkbox(
+                    meta["label"],
+                    value=False,
+                    key=f"bx_overlay_eq_{code}",
+                )
     show_bond: dict[str, bool] = {}
-    for col, (code, meta) in zip(bd_cols, BOND_REGIONS.items()):
-        with col:
-            show_bond[code] = st.checkbox(
-                meta["label"],
-                value=False,
-                key=f"bx_overlay_bd_{code}",
-            )
+    bd_items = list(BOND_REGIONS.items())
+    for row_start in range(0, len(bd_items), 3):
+        cols = st.columns(3)
+        for col, (code, meta) in zip(cols, bd_items[row_start : row_start + 3]):
+            with col:
+                show_bond[code] = st.checkbox(
+                    meta["label"],
+                    value=False,
+                    key=f"bx_overlay_bd_{code}",
+                )
     return show_equity, show_bond
 
 

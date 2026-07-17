@@ -14,6 +14,8 @@ EQUITY_REGIONS: dict[str, dict[str, str]] = {
     "UK": {"label": "英国·FTSE100", "file": "uk_equity.csv"},
     "CN": {"label": "中国·沪深300", "file": "cn_equity.csv"},
     "JP": {"label": "日本·日经225", "file": "jp_equity.csv"},
+    "CA": {"label": "加拿大·TSX综合", "file": "ca_equity.csv"},
+    "DE": {"label": "德国·DAX", "file": "de_equity.csv"},
 }
 
 BOND_REGIONS: dict[str, dict[str, str]] = {
@@ -21,6 +23,8 @@ BOND_REGIONS: dict[str, dict[str, str]] = {
     "UK": {"label": "英国·10年期国债", "file": "uk_bond.csv"},
     "CN": {"label": "中国·10年期国债", "file": "cn_bond.csv"},
     "JP": {"label": "日本·10年期国债", "file": "jp_bond.csv"},
+    "CA": {"label": "加拿大·10年期国债", "file": "ca_bond.csv"},
+    "DE": {"label": "德国·10年期国债", "file": "de_bond.csv"},
 }
 
 SHORT_BOND_SPREAD = 0.015

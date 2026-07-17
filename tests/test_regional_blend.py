@@ -21,6 +21,12 @@ def test_regional_blend_mixed_overlap():
     assert "r_equity" in df.columns
 
 
+def test_regional_blend_ca_de():
+    df = blend_regional_returns({"CA": 0.5, "DE": 0.5}, {"CA": 0.5, "DE": 0.5})
+    assert len(df) >= 30
+    assert int(df.index.min().year) >= 1957
+
+
 def test_regional_backtest_smoke():
     cfg = RunConfig.from_yaml(Path(__file__).resolve().parents[1] / "configs" / "unified.yaml")
     returns = blend_regional_returns(cfg.equity_regions, cfg.bond_regions)

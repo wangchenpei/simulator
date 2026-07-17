@@ -93,6 +93,17 @@ def main() -> None:
 
     write_series(OUT / "cn_equity.csv", cn_eq, label="CN equity")
 
+    # Canada / Germany from OECD share price indices and FRED 10Y yields
+    ca_eq_lv = fred_annual_levels("SPASTT01CAM661N")
+    de_eq_lv = fred_annual_levels("SPASTT01DEM661N")
+    write_series(OUT / "ca_equity.csv", year_returns(ca_eq_lv), label="CA equity")
+    write_series(OUT / "de_equity.csv", year_returns(de_eq_lv), label="DE equity")
+
+    ca_y = fred_annual_levels("IRLTLT01CAM156N")
+    de_y = fred_annual_levels("IRLTLT01DEM156N")
+    write_series(OUT / "ca_bond.csv", bond_total_return_from_yield(ca_y), label="CA bond")
+    write_series(OUT / "de_bond.csv", bond_total_return_from_yield(de_y), label="DE bond")
+
 
 if __name__ == "__main__":
     main()
