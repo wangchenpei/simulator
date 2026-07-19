@@ -8,8 +8,8 @@ class PortfolioState:
     main_equity: float
     main_bond: float
     reserve: float
+    benchmark_main: float
     pending_main_fill: float = 0.0
-    pending_reserve_deposit: float = 0.0
 
     def main_total(self) -> float:
         return float(self.main_equity + self.main_bond)

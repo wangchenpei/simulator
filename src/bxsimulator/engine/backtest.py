@@ -26,6 +26,7 @@ def run_backtest(
         main_equity=cfg.initial_main_value * cfg.equity_weight,
         main_bond=cfg.initial_main_value * cfg.bond_weight,
         reserve=float(cfg.initial_reserve),
+        benchmark_main=float(cfg.initial_main_value),
     )
 
     rows: list[dict] = []
@@ -56,7 +57,7 @@ def run_backtest(
                 "transfer_from_reserve": res.transfer_from_reserve,
                 "r_short": res.r_short,
                 "pending_main_fill": res.pending_main_fill,
-                "pending_reserve_deposit": res.pending_reserve_deposit,
+                "benchmark_main_end": res.benchmark_main_end,
             }
         )
 
