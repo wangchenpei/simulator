@@ -8,9 +8,10 @@
 2. **主账户资产收益**：`equity *= (1 + r_equity)`，`bond *= (1 + r_bond)`（本期 `r_*` 来自数据层，可为年度收益率）。
 3. **固定账户短债计息**：`reserve *= (1 + r_short)`（先对期初 reserve 计息；与主账户同一时期）。
 4. **平滑前主账户收益率**：`r_main = (main_after - main_begin) / main_begin`，其中 `main_after` 为步骤 2 之后、划转之前的主账户合计。
-5. **划转**：
-   - 若 `r_main > threshold`：向固定账户转出 `main_begin * (r_main - threshold)`，从股、债仓位**按当前市值比例**扣减。
-   - 若 `r_main < threshold`：从固定账户转入主账户 `min(reserve, main_begin * (threshold - r_main) * max_fill_fraction)`，按当前股债市值比例**注入**主账户。
+5. **划转**（含跨年结转）：
+   - 先按阈值计算本期主账户应**回补**或**划入平滑池**的金额。
+   - 若 `r_main < threshold`：从平滑池回补 `min(池余额, 本期应回补 + 待补主账户 + 待入平滑池)`；不足部分记入 **待补主账户**。
+   - 若 `r_main > threshold`：超出阈值部分优先冲减 **待补主账户**（留在主账户、不划入平滑池）；剩余部分划入平滑池，并冲减 **待入平滑池**；为补回主账户而暂未划入平滑池的部分记入 **待入平滑池**。
 6. **再平衡**：将主账户股、债调回配置中的目标 `equity_weight` / `bond_weight`（固定账户**不参与**股债比例分母）。
 
 阈值与权重在 YAML 中配置；股权重必须在产品允许的 `[equity_min, equity_max]` 内，且 `equity_weight + bond_weight == 1`。

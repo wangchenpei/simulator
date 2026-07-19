@@ -55,6 +55,8 @@ def run_backtest(
                 "transfer_to_reserve": res.transfer_to_reserve,
                 "transfer_from_reserve": res.transfer_from_reserve,
                 "r_short": res.r_short,
+                "pending_main_fill": res.pending_main_fill,
+                "pending_reserve_deposit": res.pending_reserve_deposit,
             }
         )
 
