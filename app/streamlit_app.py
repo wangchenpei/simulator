@@ -15,6 +15,9 @@ for p in (str(SRC), str(ROOT)):
         sys.path.insert(0, p)
 
 
+BACKTEST_ENGINE_ID = "benchmark-path-v1"
+
+
 def _ensure_bxsimulator_from_src() -> None:
     """Drop cached bxsimulator modules not loaded from this repo's src/."""
     if not (SRC / "bxsimulator").is_dir():
@@ -29,7 +32,19 @@ def _ensure_bxsimulator_from_src() -> None:
             del sys.modules[name]
 
 
-_ensure_bxsimulator_from_src()
+def _reload_engine_modules() -> None:
+    """Pick up engine changes during Streamlit hot-reload (editable install cache)."""
+    _ensure_bxsimulator_from_src()
+    import bxsimulator.engine.state as state_mod
+    import bxsimulator.engine.smooth as smooth_mod
+    import bxsimulator.engine.backtest as backtest_mod
+
+    importlib.reload(state_mod)
+    importlib.reload(smooth_mod)
+    importlib.reload(backtest_mod)
+
+
+_reload_engine_modules()
 
 from app.components.brand_header import render_brand_header  # noqa: E402
 from app.components.charts import (
@@ -84,6 +99,10 @@ def _render_results(cfg: RunConfig, nav: pd.DataFrame, final: PortfolioState) ->
     m2.metric("主账户", fmt_amount(final.main_total()))
     m3.metric("固定账户", fmt_amount(final.reserve))
     m4.metric("回测期数", len(nav))
+    if "benchmark_main_end" not in nav.columns:
+        st.warning("当前结果为旧版引擎缓存，请重新点击 **运行回测**。")
+    else:
+        st.caption(f"平滑引擎：{BACKTEST_ENGINE_ID}（明细表含「基准主账户」列）")
 
     show_equity, show_bond = render_regional_overlay_toggles()
     equity_index = load_equity_index_overlays(nav)
@@ -150,6 +169,10 @@ def main() -> None:
         initial_sidebar_state="expanded",
     )
     render_brand_header("分红产品投资仿真器")
+
+    if st.session_state.get("backtest_engine_id") != BACKTEST_ENGINE_ID:
+        st.session_state.pop("backtest_result", None)
+        st.session_state["backtest_engine_id"] = BACKTEST_ENGINE_ID
 
     with st.sidebar:
         ui = render_sidebar()
