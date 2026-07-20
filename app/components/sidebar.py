@@ -91,13 +91,41 @@ def _validate_pct_weights(
     return True, total, None
 
 
+def _equal_pct_split(n: int) -> list[float]:
+    """Return n percentages that sum to 100.00 (2 decimal places)."""
+    if n <= 0:
+        return []
+    if n == 1:
+        return [100.0]
+    base = round(100.0 / n, 2)
+    weights = [base] * n
+    weights[-1] = round(100.0 - sum(weights[:-1]), 2)
+    return weights
+
+
+def _sync_equal_weights(key_prefix: str, selected: list[str], items: list[tuple[str, dict[str, str]]]) -> None:
+    """Rebalance to equal weights when the set of selected regions changes."""
+    sig_key = f"{key_prefix}_selected_sig"
+    signature = tuple(sorted(selected))
+    if st.session_state.get(sig_key) == signature:
+        return
+    st.session_state[sig_key] = signature
+    split = _equal_pct_split(len(selected))
+    selected_set = set(selected)
+    for i, code in enumerate(selected):
+        st.session_state[f"{key_prefix}_{code}"] = split[i]
+    for code, _ in items:
+        if code not in selected_set:
+            st.session_state[f"{key_prefix}_{code}"] = 0.0
+
+
 def _region_weight_inputs(
     catalog: dict[str, dict[str, str]],
     defaults: dict[str, float],
     *,
     key_prefix: str,
 ) -> tuple[dict[str, float], bool]:
-    st.caption("勾选参与区域后填写权重；已勾选区域权重合计须为 100.00%")
+    st.caption("勾选参与区域后自动均分权重（可手动调整）；已勾选区域合计须为 100.00%")
     items = list(catalog.items())
     cb_cols = st.columns(3, gap="small")
     for i, (code, meta) in enumerate(items):
@@ -114,22 +142,22 @@ def _region_weight_inputs(
         if st.session_state.get(f"{key_prefix}_{code}_on", False)
     ]
 
+    _sync_equal_weights(key_prefix, selected, items)
+
     raw: dict[str, float] = {code: 0.0 for code, _ in items}
     if selected:
         wcols = st.columns(2, gap="small")
         for i, code in enumerate(selected):
             meta = catalog[code]
             wkey = f"{key_prefix}_{code}"
-            pct_default = float(defaults.get(code, 0.0)) * 100.0
-            if wkey not in st.session_state:
-                st.session_state[wkey] = pct_default if pct_default > _WEIGHT_TOTAL_TOLERANCE else 0.0
             with wcols[i % 2]:
                 raw[code] = float(
                     st.number_input(
                         f"{meta['label']} (%)",
                         min_value=0.0,
                         max_value=100.0,
-                        step=1.0,
+                        step=0.01,
+                        format="%.2f",
                         key=wkey,
                     )
                 )
